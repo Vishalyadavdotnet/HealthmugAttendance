@@ -5,12 +5,21 @@
     <meta charset="UTF-8">
     <title>Attendance Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- AOS Animation Library -->
+    <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #000;
+            --card-bg: #fff;
+            --accent: #0d6efd;
+        }
+
         body {
-            background: #f8f9fa;
+            background: var(--bg-color);
             font-family: 'Segoe UI', sans-serif;
+            color: var(--text-color);
+            transition: background 0.5s, color 0.5s;
         }
 
         .main {
@@ -20,9 +29,9 @@
         .card-box {
             border-radius: 15px;
             padding: 20px;
-            background: white;
+            background: var(--card-bg);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s, color 0.5s;
         }
 
         .card-box:hover {
@@ -36,10 +45,11 @@
         }
 
         .total-box {
-            background: white;
+            background: var(--card-bg);
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.5s, color 0.5s;
         }
 
         .table td,
@@ -72,17 +82,24 @@
 
 <body>
     <div class="main container-fluid">
-        <h4 data-aos="fade-right">📊 ATTENDANCE DASHBOARD</h4>
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+            <h4 data-aos="fade-right">📊 ATTENDANCE DASHBOARD</h4>
+            <select id="themeSelect" class="form-select w-auto" data-aos="fade-left">
+                <option value="default">Default (Light)</option>
+                <option value="dark">Dark Mode</option>
+                <option value="aqua">Aqua Blue</option>
+                <option value="green">Green Nature</option>
+                <option value="purple">Purple Glow</option>
+                <option value="orange">Sunset Orange</option>
+                <option value="grey">Grey Minimal</option>
+                <option value="pink">Cyberpunk Pink</option>
+                <option value="gradient">Gradient</option>
+            </select>
+        </div>
 
         <!-- Year & Month Dropdown -->
         <div class="d-flex flex-wrap gap-3 mb-3 justify-content-center" data-aos="fade-down">
-            <select id="yearSelect" class="form-select w-auto">
-                <script>
-                    for (let y = 2025; y <= 2030; y++) {
-                        document.write(`<option value="${y}">${y}</option>`);
-                    }
-                </script>
-            </select>
+            <select id="yearSelect" class="form-select w-auto"></select>
             <select id="monthSelect" class="form-select w-auto">
                 <option>January</option>
                 <option>February</option>
@@ -189,10 +206,56 @@
     <!-- JS Section -->
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
-        AOS.init({
-            duration: 1000,
-            once: true
+        AOS.init({ duration: 1000, once: true });
+
+        // Populate year dropdown
+        let yearSelect = document.getElementById("yearSelect");
+        for (let y = 2025; y <= 2030; y++) {
+            let opt = document.createElement("option");
+            opt.value = y;
+            opt.innerText = y;
+            yearSelect.appendChild(opt);
+        }
+
+        // Theme switcher
+        document.getElementById("themeSelect").addEventListener("change", function () {
+            let theme = this.value;
+            switch (theme) {
+                case "dark":
+                    setTheme("#121212", "#f1f1f1", "#1e1e1e", "#bb86fc"); break;
+                case "aqua":
+                    setTheme("#e0f7fa", "#004d40", "#ffffff", "#00acc1"); break;
+                case "green":
+                    setTheme("#e8f5e9", "#1b5e20", "#ffffff", "#43a047"); break;
+                case "purple":
+                    setTheme("#f3e5f5", "#4a148c", "#ffffff", "#9c27b0"); break;
+                case "orange":
+                    setTheme("#fff3e0", "#e65100", "#ffffff", "#fb8c00"); break;
+                case "grey":
+                    setTheme("#f5f5f5", "#212121", "#ffffff", "#9e9e9e"); break;
+                case "pink":
+                    setTheme("#fce4ec", "#880e4f", "#ffffff", "#e91e63"); break;
+                case "gradient":
+                    document.body.style.background = "linear-gradient(to right, #00c6ff, #0072ff)";
+                    document.body.style.color = "#fff";
+                    document.querySelectorAll(".card-box, .total-box").forEach(el => {
+                        el.style.background = "rgba(255,255,255,0.1)";
+                        el.style.color = "#fff";
+                    });
+                    break;
+                default:
+                    setTheme("#f8f9fa", "#000", "#fff", "#0d6efd"); break;
+            }
         });
+
+        function setTheme(bg, text, card, accent) {
+            document.body.style.background = bg;
+            document.body.style.color = text;
+            document.querySelectorAll(".card-box, .total-box").forEach(el => {
+                el.style.background = card;
+                el.style.color = text;
+            });
+        }
     </script>
 
     <script>
@@ -200,20 +263,17 @@
             let [h, m] = timeStr.split(":").map(Number);
             return h * 60 + m;
         }
-
         function formatTime(minutes) {
             let h = Math.floor(minutes / 60);
             let m = minutes % 60;
             return `${h}:${m.toString().padStart(2, "0")}`;
         }
-
         function calculateHours() {
             let totalMinutes = 0;
             let workedDays = 0;
             let currentYear = document.getElementById("yearSelect").value;
             let currentMonth = document.getElementById("monthSelect").value;
-
-            const expectedDailyMinutes = 9 * 60 + 6; // 9h 6m = 546 minutes
+            const expectedDailyMinutes = 9 * 60 + 6;
 
             document.querySelectorAll(`#attendanceTable tr[data-year="${currentYear}"][data-month="${currentMonth}"]`)
                 .forEach(row => {
@@ -225,13 +285,11 @@
                     if (inTime && outTime && inTime.includes(":") && outTime.includes(":")) {
                         let start = new Date("2000-01-01T" + inTime + ":00");
                         let end = new Date("2000-01-01T" + outTime + ":00");
-                        let diff = (end - start) / 60000; // minutes
+                        let diff = (end - start) / 60000;
                         if (diff > 0) {
                             totalMinutes += diff;
                             workedDays++;
                             totalCell.innerText = formatTime(diff);
-
-                            // Difference vs 9:06
                             let balance = diff - expectedDailyMinutes;
                             if (balance === 0) {
                                 diffCell.innerText = "On Time";
@@ -250,20 +308,13 @@
                     }
                 });
 
-            // Completed Hours
             document.getElementById("completedHours").innerText = formatTime(totalMinutes);
-
-            // Remaining Hours
             let totalPlannedMinutes = parseTimeString(document.getElementById("totalHours").innerText);
             let remaining = totalPlannedMinutes - totalMinutes;
             if (remaining < 0) remaining = 0;
             document.getElementById("remainingHours").innerText = formatTime(remaining);
-
-            // Expected Till Date
             let expectedMinutesTillDate = workedDays * expectedDailyMinutes;
             document.getElementById("expectedHours").innerText = formatTime(expectedMinutesTillDate);
-
-            // Performance Difference
             let performance = totalMinutes - expectedMinutesTillDate;
             if (performance === 0) {
                 document.getElementById("performanceDiff").innerText = "On Track";
@@ -280,7 +331,6 @@
         function filterData() {
             let currentYear = document.getElementById("yearSelect").value;
             let currentMonth = document.getElementById("monthSelect").value;
-
             document.querySelectorAll("#attendanceTable tr").forEach(row => {
                 if (row.getAttribute("data-year") === currentYear && row.getAttribute("data-month") === currentMonth) {
                     row.classList.remove("hidden");
@@ -291,14 +341,11 @@
             calculateHours();
         }
 
-        // Event listeners
-        document.getElementById("yearSelect").addEventListener("change", filterData);
-        document.getElementById("monthSelect").addEventListener("change", filterData);
-
-        // On page load
         document.getElementById("yearSelect").value = "2025";
         document.getElementById("monthSelect").value = "September";
         filterData();
+        document.getElementById("yearSelect").addEventListener("change", filterData);
+        document.getElementById("monthSelect").addEventListener("change", filterData);
     </script>
 </body>
 
