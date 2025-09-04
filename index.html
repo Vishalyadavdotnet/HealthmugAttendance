@@ -5,37 +5,41 @@
     <meta charset="UTF-8">
     <title>Attendance Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <style>
         body {
             background: #f8f9fa;
-        }
-
-        .sidebar {
-            width: 60px;
-            background: #ff6f61;
-            height: 100vh;
-            position: fixed;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .main {
-            margin-left: 70px;
             padding: 20px;
         }
 
         .card-box {
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
         .card-title {
             font-weight: bold;
+            margin-bottom: 8px;
         }
 
         .total-box {
             background: white;
             border-radius: 15px;
             padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .table td,
@@ -47,20 +51,31 @@
         .hidden {
             display: none;
         }
+
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            h4 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .card-box {
+                text-align: center;
+            }
+
+            .total-box h5 {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
 <body>
-
-    <div class="sidebar d-flex flex-column align-items-center py-3">
-        <div class="text-white fw-bold">V</div>
-    </div>
-
-    <div class="main">
-        <h4>ATTENDANCE</h4>
+    <div class="main container-fluid">
+        <h4 data-aos="fade-right">📊 ATTENDANCE DASHBOARD</h4>
 
         <!-- Year & Month Dropdown -->
-        <div class="d-flex gap-3 mb-3">
+        <div class="d-flex flex-wrap gap-3 mb-3 justify-content-center" data-aos="fade-down">
             <select id="yearSelect" class="form-select w-auto">
                 <script>
                     for (let y = 2025; y <= 2030; y++) {
@@ -86,20 +101,20 @@
 
         <!-- Summary Cards -->
         <div class="row g-3 mb-3">
-            <div class="col-md-4">
-                <div class="card-box bg-white">
+            <div class="col-md-4 col-12" data-aos="zoom-in">
+                <div class="card-box">
                     <div class="card-title">Total Working Hours</div>
                     <div id="totalHours">218:11</div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card-box bg-white">
+            <div class="col-md-4 col-12" data-aos="zoom-in" data-aos-delay="200">
+                <div class="card-box">
                     <div class="card-title">Completed Working Hours</div>
                     <div id="completedHours">0:00</div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card-box bg-white">
+            <div class="col-md-4 col-12" data-aos="zoom-in" data-aos-delay="400">
+                <div class="card-box">
                     <div class="card-title">Remaining Working Hours</div>
                     <div id="remainingHours">0:00</div>
                 </div>
@@ -108,14 +123,14 @@
 
         <!-- Extra Summary Cards -->
         <div class="row g-3 mb-3">
-            <div class="col-md-6">
-                <div class="card-box bg-white">
+            <div class="col-md-6 col-12" data-aos="flip-left">
+                <div class="card-box">
                     <div class="card-title">Expected Till Date</div>
                     <div id="expectedHours">0:00</div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card-box bg-white">
+            <div class="col-md-6 col-12" data-aos="flip-right">
+                <div class="card-box">
                     <div class="card-title">Performance vs Expected</div>
                     <div id="performanceDiff">0:00</div>
                 </div>
@@ -123,72 +138,62 @@
         </div>
 
         <!-- Daily Attendance Table -->
-        <div class="total-box">
-            <h5>Daily Attendance</h5>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>In Time</th>
-                        <th>Out Time</th>
-                        <th>Total Hours</th>
-                        <th>Difference (vs 9:06)</th>
-                    </tr>
-                </thead>
-                <tbody id="attendanceTable">
-
-                    <!-- #region July 2025 -->
-                    <tr data-year="2025" data-month="July">
-                        <td>01 Jul 2025</td>
-                        <td>11:06</td>
-                        <td>18:28</td>
-                        <td class="total-cell">00:00</td>
-                        <td class="diff-cell">-</td>
-                    </tr>
-                    <tr data-year="2025" data-month="July">
-                        <td>02 Jul 2025</td>
-                        <td>09:30</td>
-                        <td>18:37</td>
-                        <td class="total-cell">00:00</td>
-                        <td class="diff-cell">-</td>
-                    </tr>
-                    <!-- #endregion July 2025 -->
-
-                    <!-- #region September 2025 -->
-                    <tr data-year="2025" data-month="September">
-                        <td>01 Sep 2025</td>
-                        <td>08:35</td>
-                        <td>18:30</td>
-                        <td class="total-cell">00:00</td>
-                        <td class="diff-cell">-</td>
-                    </tr>
-                    <tr data-year="2025" data-month="September">
-                        <td>02 Sep 2025</td>
-                        <td>08:35</td>
-                        <td>18:30</td>
-                        <td class="total-cell">00:00</td>
-                        <td class="diff-cell">-</td>
-                    </tr>
-                    <tr data-year="2025" data-month="September">
-                        <td>03 Sep 2025</td>
-                        <td>09:25</td>
-                        <td>18:30</td>
-                        <td class="total-cell">00:00</td>
-                        <td class="diff-cell">-</td>
-                    </tr>
-                    <tr data-year="2025" data-month="September">
-                        <td>04 Sep 2025</td>
-                        <td>11:35</td>
-                        <td>18:30</td>
-                        <td class="total-cell">00:00</td>
-                        <td class="diff-cell">-</td>
-                    </tr>
-                    <!-- #endregion September 2025 -->
-
-                </tbody>
-            </table>
+        <div class="total-box" data-aos="fade-up">
+            <h5>📅 Daily Attendance</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>In Time</th>
+                            <th>Out Time</th>
+                            <th>Total Hours</th>
+                            <th>Difference (vs 9:06)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTable">
+                        <tr data-year="2025" data-month="September">
+                            <td>01 Sep 2025</td>
+                            <td>08:35</td>
+                            <td>18:30</td>
+                            <td class="total-cell">00:00</td>
+                            <td class="diff-cell">-</td>
+                        </tr>
+                        <tr data-year="2025" data-month="September">
+                            <td>02 Sep 2025</td>
+                            <td>08:35</td>
+                            <td>18:30</td>
+                            <td class="total-cell">00:00</td>
+                            <td class="diff-cell">-</td>
+                        </tr>
+                        <tr data-year="2025" data-month="September">
+                            <td>03 Sep 2025</td>
+                            <td>09:25</td>
+                            <td>18:30</td>
+                            <td class="total-cell">00:00</td>
+                            <td class="diff-cell">-</td>
+                        </tr>
+                        <tr data-year="2025" data-month="September">
+                            <td>04 Sep 2025</td>
+                            <td>11:35</td>
+                            <td>18:30</td>
+                            <td class="total-cell">00:00</td>
+                            <td class="diff-cell">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <!-- JS Section -->
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+    </script>
 
     <script>
         function parseTimeString(timeStr) {
@@ -295,7 +300,6 @@
         document.getElementById("monthSelect").value = "September";
         filterData();
     </script>
-
 </body>
 
 </html>
