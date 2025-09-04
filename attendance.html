@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .sidebar {
+            width: 60px;
+            background: #ff6f61;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .main {
+            margin-left: 70px;
+            padding: 20px;
+        }
+
+        .card-box {
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-weight: bold;
+        }
+
+        .total-box {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .table td,
+        .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar d-flex flex-column align-items-center py-3">
+        <div class="text-white fw-bold">V</div>
+    </div>
+
+    <div class="main">
+        <h4>ATTENDANCE</h4>
+
+        <!-- Year & Month Dropdown -->
+        <div class="d-flex gap-3 mb-3">
+            <select id="yearSelect" class="form-select w-auto">
+                <script>
+                    for (let y = 2025; y <= 2030; y++) {
+                        document.write(`<option value="${y}">${y}</option>`);
+                    }
+                </script>
+            </select>
+            <select id="monthSelect" class="form-select w-auto">
+                <option>January</option>
+                <option>February</option>
+                <option>March</option>
+                <option>April</option>
+                <option>May</option>
+                <option>June</option>
+                <option>July</option>
+                <option>August</option>
+                <option selected>September</option>
+                <option>October</option>
+                <option>November</option>
+                <option>December</option>
+            </select>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="card-box bg-white">
+                    <div class="card-title">Total Working Hours</div>
+                    <div id="totalHours">218:11</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-box bg-white">
+                    <div class="card-title">Completed Working Hours</div>
+                    <div id="completedHours">0:00</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-box bg-white">
+                    <div class="card-title">Remaining Working Hours</div>
+                    <div id="remainingHours">0:00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extra Summary Cards -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <div class="card-box bg-white">
+                    <div class="card-title">Expected Till Date</div>
+                    <div id="expectedHours">0:00</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-box bg-white">
+                    <div class="card-title">Performance vs Expected</div>
+                    <div id="performanceDiff">0:00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Attendance Table -->
+        <div class="total-box">
+            <h5>Daily Attendance</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>In Time</th>
+                        <th>Out Time</th>
+                        <th>Total Hours</th>
+                        <th>Difference (vs 9:06)</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTable">
+
+                    <!-- #region July 2025 -->
+                    <tr data-year="2025" data-month="July">
+                        <td>01 Jul 2025</td>
+                        <td>11:06</td>
+                        <td>18:28</td>
+                        <td class="total-cell">00:00</td>
+                        <td class="diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="July">
+                        <td>02 Jul 2025</td>
+                        <td>09:30</td>
+                        <td>18:37</td>
+                        <td class="total-cell">00:00</td>
+                        <td class="diff-cell">-</td>
+                    </tr>
+                    <!-- #endregion July 2025 -->
+
+                    <!-- #region September 2025 -->
+                    <tr data-year="2025" data-month="September">
+                        <td>01 Sep 2025</td>
+                        <td>08:35</td>
+                        <td>18:30</td>
+                        <td class="total-cell">00:00</td>
+                        <td class="diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td>02 Sep 2025</td>
+                        <td>08:35</td>
+                        <td>18:30</td>
+                        <td class="total-cell">00:00</td>
+                        <td class="diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td>03 Sep 2025</td>
+                        <td>09:25</td>
+                        <td>18:30</td>
+                        <td class="total-cell">00:00</td>
+                        <td class="diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td>04 Sep 2025</td>
+                        <td>11:35</td>
+                        <td>18:30</td>
+                        <td class="total-cell">00:00</td>
+                        <td class="diff-cell">-</td>
+                    </tr>
+                    <!-- #endregion September 2025 -->
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function parseTimeString(timeStr) {
+            let [h, m] = timeStr.split(":").map(Number);
+            return h * 60 + m;
+        }
+
+        function formatTime(minutes) {
+            let h = Math.floor(minutes / 60);
+            let m = minutes % 60;
+            return `${h}:${m.toString().padStart(2, "0")}`;
+        }
+
+        function calculateHours() {
+            let totalMinutes = 0;
+            let workedDays = 0;
+            let currentYear = document.getElementById("yearSelect").value;
+            let currentMonth = document.getElementById("monthSelect").value;
+
+            const expectedDailyMinutes = 9 * 60 + 6; // 9h 6m = 546 minutes
+
+            document.querySelectorAll(`#attendanceTable tr[data-year="${currentYear}"][data-month="${currentMonth}"]`)
+                .forEach(row => {
+                    let inTime = row.cells[1].innerText.trim();
+                    let outTime = row.cells[2].innerText.trim();
+                    let totalCell = row.querySelector(".total-cell");
+                    let diffCell = row.querySelector(".diff-cell");
+
+                    if (inTime && outTime && inTime.includes(":") && outTime.includes(":")) {
+                        let start = new Date("2000-01-01T" + inTime + ":00");
+                        let end = new Date("2000-01-01T" + outTime + ":00");
+                        let diff = (end - start) / 60000; // minutes
+                        if (diff > 0) {
+                            totalMinutes += diff;
+                            workedDays++;
+                            totalCell.innerText = formatTime(diff);
+
+                            // Difference vs 9:06
+                            let balance = diff - expectedDailyMinutes;
+                            if (balance === 0) {
+                                diffCell.innerText = "On Time";
+                                diffCell.style.color = "black";
+                            } else if (balance > 0) {
+                                diffCell.innerText = "+ " + formatTime(balance);
+                                diffCell.style.color = "green";
+                            } else {
+                                diffCell.innerText = "- " + formatTime(Math.abs(balance));
+                                diffCell.style.color = "red";
+                            }
+                        }
+                    } else {
+                        totalCell.innerText = "00:00";
+                        diffCell.innerText = "-";
+                    }
+                });
+
+            // Completed Hours
+            document.getElementById("completedHours").innerText = formatTime(totalMinutes);
+
+            // Remaining Hours
+            let totalPlannedMinutes = parseTimeString(document.getElementById("totalHours").innerText);
+            let remaining = totalPlannedMinutes - totalMinutes;
+            if (remaining < 0) remaining = 0;
+            document.getElementById("remainingHours").innerText = formatTime(remaining);
+
+            // Expected Till Date
+            let expectedMinutesTillDate = workedDays * expectedDailyMinutes;
+            document.getElementById("expectedHours").innerText = formatTime(expectedMinutesTillDate);
+
+            // Performance Difference
+            let performance = totalMinutes - expectedMinutesTillDate;
+            if (performance === 0) {
+                document.getElementById("performanceDiff").innerText = "On Track";
+                document.getElementById("performanceDiff").style.color = "black";
+            } else if (performance > 0) {
+                document.getElementById("performanceDiff").innerText = "+ " + formatTime(performance);
+                document.getElementById("performanceDiff").style.color = "green";
+            } else {
+                document.getElementById("performanceDiff").innerText = "- " + formatTime(Math.abs(performance));
+                document.getElementById("performanceDiff").style.color = "red";
+            }
+        }
+
+        function filterData() {
+            let currentYear = document.getElementById("yearSelect").value;
+            let currentMonth = document.getElementById("monthSelect").value;
+
+            document.querySelectorAll("#attendanceTable tr").forEach(row => {
+                if (row.getAttribute("data-year") === currentYear && row.getAttribute("data-month") === currentMonth) {
+                    row.classList.remove("hidden");
+                } else {
+                    row.classList.add("hidden");
+                }
+            });
+            calculateHours();
+        }
+
+        // Event listeners
+        document.getElementById("yearSelect").addEventListener("change", filterData);
+        document.getElementById("monthSelect").addEventListener("change", filterData);
+
+        // On page load
+        document.getElementById("yearSelect").value = "2025";
+        document.getElementById("monthSelect").value = "September";
+        filterData();
+    </script>
+
+</body>
+
+</html>
