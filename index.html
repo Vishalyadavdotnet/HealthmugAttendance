@@ -24,6 +24,15 @@
         #attendanceTable tr:hover {
             cursor: pointer;
         }
+
+        /* Card hover glow effect */
+        .card {
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(233, 30, 99, 0.4);
+        }
     </style>
 </head>
 
@@ -235,17 +244,25 @@
         // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
-        // Cards animation
+        // Cards animation + hover pop
         gsap.utils.toArray(".card").forEach(card => {
             gsap.from(card, {
                 opacity: 0,
                 y: 50,
+                scale: 0.95,
                 duration: 0.8,
-                ease: "power3.out",
+                ease: "back.out(1.2)",
                 scrollTrigger: {
                     trigger: card,
                     start: "top 90%",
                 }
+            });
+
+            card.addEventListener("mouseenter", () => {
+                gsap.to(card, { scale: 1.03, boxShadow: "0 25px 50px rgba(233,30,99,0.5)", duration: 0.3 });
+            });
+            card.addEventListener("mouseleave", () => {
+                gsap.to(card, { scale: 1, boxShadow: "0 10px 20px rgba(0,0,0,0.15)", duration: 0.3 });
             });
         });
 
@@ -266,7 +283,7 @@
                 }
             });
 
-            // Hover pop effect
+            // Hover pop effect for rows
             rows.forEach(row => {
                 row.addEventListener("mouseenter", () => {
                     gsap.to(row, { scale: 1.03, duration: 0.2, ease: "power1.out" });
