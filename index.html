@@ -160,11 +160,12 @@
             }
         });
 
-        // Attendance Calculations
+        // Time Parsing and Calculations
         function parseTime(timeStr) {
             let [h, m] = timeStr.split(":").map(Number);
             return h * 60 + m;
         }
+
         function formatTime(mins) {
             let h = Math.floor(mins / 60);
             let m = mins % 60;
@@ -235,30 +236,32 @@
                 opacity: 0,
                 y: 50,
                 duration: 0.8,
+                ease: "power3.out",
                 scrollTrigger: {
                     trigger: card,
-                    start: "top 80%",
+                    start: "top 90%",
                 }
             });
         });
 
-        // Table row stagger animation
+        // Table row animation: slide up + fade + rotate
         function animateRows() {
-            gsap.utils.toArray("#attendanceTable tr:not(.hidden)").forEach(row => {
-                gsap.from(row, {
-                    opacity: 0,
-                    y: 30,
-                    duration: 0.5,
-                    stagger: 0.1,
-                    scrollTrigger: {
-                        trigger: row,
-                        start: "top 90%",
-                    }
-                });
+            let rows = gsap.utils.toArray("#attendanceTable tr:not(.hidden)");
+            gsap.from(rows, {
+                y: 50,
+                rotationX: 15,
+                scale: 0.95,
+                opacity: 0,
+                duration: 0.8,
+                ease: "back.out(0.6)",
+                stagger: 0.12,
+                scrollTrigger: {
+                    trigger: "#attendanceTable",
+                    start: "top 90%",
+                }
             });
         }
     </script>
-
 </body>
 
 </html>
