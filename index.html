@@ -263,6 +263,20 @@
                 el.style.color = text;
             });
         }
+
+        function applyDefaultPinkTheme() {
+                const themeSelect = document.getElementById("themeSelect");
+                themeSelect.value = "pink"; // select pink in dropdown
+                // Apply pink theme directly
+                document.body.style.background = "#fce4ec";
+                document.body.style.color = "#880e4f";
+                document.querySelectorAll(".card-box, .total-box").forEach(el => {
+                    el.style.background = "#ffffff";
+                    el.style.color = "#880e4f";
+                });
+            }
+            applyDefaultPinkTheme();
+
     </script>
 
     <script>
