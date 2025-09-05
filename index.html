@@ -19,6 +19,11 @@
             background-color: #e91e63;
             border-radius: 10px;
         }
+
+        /* Row hover pop effect */
+        #attendanceTable tr:hover {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -259,6 +264,16 @@
                     trigger: "#attendanceTable",
                     start: "top 90%",
                 }
+            });
+
+            // Hover pop effect
+            rows.forEach(row => {
+                row.addEventListener("mouseenter", () => {
+                    gsap.to(row, { scale: 1.03, duration: 0.2, ease: "power1.out" });
+                });
+                row.addEventListener("mouseleave", () => {
+                    gsap.to(row, { scale: 1, duration: 0.2, ease: "power1.out" });
+                });
             });
         }
     </script>
