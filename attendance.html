@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <style>
+        .scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e91e63;
+            border-radius: 10px;
+        }
+
+        /* Row hover pop effect */
+        #attendanceTable tr:hover {
+            cursor: pointer;
+        }
+
+        /* Card hover glow effect */
+        .card {
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(233, 30, 99, 0.4);
+        }
+    </style>
+</head>
+
+<body class="bg-pink-100 text-pink-900 font-sans transition-all duration-500">
+
+    <div class="container mx-auto p-4">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+            <h1 class="text-2xl font-bold">📊 ATTENDANCE DASHBOARD</h1>
+            <select id="themeSelect"
+                class="border border-pink-300 rounded px-2 py-1 text-pink-900 bg-white w-48 md:w-auto">
+                <option value="default">Default (Pink)</option>
+            </select>
+        </div>
+
+        <!-- Year & Month -->
+        <div class="flex flex-wrap gap-3 justify-center mb-6">
+            <select id="yearSelect" class="border border-pink-300 rounded px-2 py-1 bg-white text-pink-900"></select>
+            <select id="monthSelect" class="border border-pink-300 rounded px-2 py-1 bg-white text-pink-900 w-36">
+                <option>January</option>
+                <option>February</option>
+                <option>March</option>
+                <option>April</option>
+                <option>May</option>
+                <option>June</option>
+                <option>July</option>
+                <option>August</option>
+                <option selected>September</option>
+                <option>October</option>
+                <option>November</option>
+                <option>December</option>
+            </select>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow-lg card">
+                <h2 class="font-bold mb-2">Total Working Hours</h2>
+                <div id="totalHours" class="text-xl">218:11</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-lg card">
+                <h2 class="font-bold mb-2">Completed Working Hours</h2>
+                <div id="completedHours" class="text-xl">0:00</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-lg card">
+                <h2 class="font-bold mb-2">Remaining Working Hours</h2>
+                <div id="remainingHours" class="text-xl">0:00</div>
+            </div>
+        </div>
+
+        <!-- Extra Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow-lg card">
+                <h2 class="font-bold mb-2">Expected Till Date</h2>
+                <div id="expectedHours" class="text-xl">0:00</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-lg card">
+                <h2 class="font-bold mb-2">Performance vs Expected</h2>
+                <div id="performanceDiff" class="text-xl">0:00</div>
+            </div>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="bg-white rounded-lg shadow-lg p-4 overflow-x-auto scrollbar">
+            <h2 class="font-bold mb-4">📅 Daily Attendance</h2>
+            <table class="min-w-full border border-pink-300 text-center">
+                <thead class="bg-pink-200">
+                    <tr>
+                        <th class="px-2 py-1 border">Date</th>
+                        <th class="px-2 py-1 border">In Time</th>
+                        <th class="px-2 py-1 border">Out Time</th>
+                        <th class="px-2 py-1 border">Total Hours</th>
+                        <th class="px-2 py-1 border">Difference (vs 9:06)</th>
+                    </tr>
+                </thead>
+                
+                <tbody id="attendanceTable">
+
+                    <!-- #region September 2025 -->
+                    <tr data-year="2025" data-month="September">
+                        <td class="px-2 py-1 border">01 Sep 2025</td>
+                        <td class="px-2 py-1 border">08:42</td>
+                        <td class="px-2 py-1 border">18:30</td>
+                        <td class="px-2 py-1 border total-cell">00:00</td>
+                        <td class="px-2 py-1 border diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td class="px-2 py-1 border">02 Sep 2025</td>
+                        <td class="px-2 py-1 border">08:34</td>
+                        <td class="px-2 py-1 border">18:30</td>
+                        <td class="px-2 py-1 border total-cell">00:00</td>
+                        <td class="px-2 py-1 border diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td class="px-2 py-1 border">03 Sep 2025</td>
+                        <td class="px-2 py-1 border">08:57</td>
+                        <td class="px-2 py-1 border">18:30</td>
+                        <td class="px-2 py-1 border total-cell">00:00</td>
+                        <td class="px-2 py-1 border diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td class="px-2 py-1 border">04 Sep 2025</td>
+                        <td class="px-2 py-1 border">11:33</td>
+                        <td class="px-2 py-1 border">18:30</td>
+                        <td class="px-2 py-1 border total-cell">00:00</td>
+                        <td class="px-2 py-1 border diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td class="px-2 py-1 border">05 Sep 2025</td>
+                        <td class="px-2 py-1 border">09:16</td>
+                        <td class="px-2 py-1 border">18:30</td>
+                        <td class="px-2 py-1 border total-cell">00:00</td>
+                        <td class="px-2 py-1 border diff-cell">-</td>
+                    </tr>
+                    <tr data-year="2025" data-month="September">
+                        <td class="px-2 py-1 border">06 Sep 2025</td>
+                        <td class="px-2 py-1 border">11:30</td>
+                        <td class="px-2 py-1 border">18:30</td>
+                        <td class="px-2 py-1 border total-cell">00:00</td>
+                        <td class="px-2 py-1 border diff-cell">-</td>
+                    </tr>
+                    <!-- #endregion September 2025 -->
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Populate Year
+        let yearSelect = document.getElementById("yearSelect");
+        for (let y = 2025; y <= 2030; y++) {
+            let opt = document.createElement("option");
+            opt.value = y;
+            opt.text = y;
+            yearSelect.appendChild(opt);
+        }
+
+        // Theme Switch
+        const themeSelect = document.getElementById("themeSelect");
+        themeSelect.addEventListener("change", () => {
+            const val = themeSelect.value;
+            if (val === "default") {
+                document.body.className = "bg-pink-100 text-pink-900 font-sans transition-all duration-500";
+            } else if (val === "dark") {
+                document.body.className = "bg-gray-900 text-gray-100 font-sans transition-all duration-500";
+            }
+        });
+
+        // Time Parsing and Calculations
+        function parseTime(timeStr) {
+            let [h, m] = timeStr.split(":").map(Number);
+            return h * 60 + m;
+        }
+
+        function formatTime(mins) {
+            let h = Math.floor(mins / 60);
+            let m = mins % 60;
+            return `${h}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function calculateHours() {
+            let totalMinutes = 0;
+            let workedDays = 0;
+            let year = yearSelect.value;
+            let month = document.getElementById("monthSelect").value;
+            const expectedDaily = 9 * 60 + 6;
+
+            document.querySelectorAll(`#attendanceTable tr[data-year="${year}"][data-month="${month}"]`).forEach(row => {
+                let inTime = row.cells[1].innerText;
+                let outTime = row.cells[2].innerText;
+                let totalCell = row.querySelector(".total-cell");
+                let diffCell = row.querySelector(".diff-cell");
+
+                if (inTime && outTime) {
+                    let diff = parseTime(outTime) - parseTime(inTime);
+                    totalMinutes += diff;
+                    workedDays++;
+                    totalCell.innerText = formatTime(diff);
+                    let balance = diff - expectedDaily;
+                    if (balance === 0) { diffCell.innerText = "On Time"; diffCell.style.color = "black"; }
+                    else if (balance > 0) { diffCell.innerText = "+ " + formatTime(balance); diffCell.style.color = "green"; }
+                    else { diffCell.innerText = "- " + formatTime(Math.abs(balance)); diffCell.style.color = "red"; }
+                }
+            });
+
+            document.getElementById("completedHours").innerText = formatTime(totalMinutes);
+            let totalPlanned = parseTime(document.getElementById("totalHours").innerText);
+            let remaining = Math.max(totalPlanned - totalMinutes, 0);
+            document.getElementById("remainingHours").innerText = formatTime(remaining);
+
+            let expectedTillDate = workedDays * expectedDaily;
+            document.getElementById("expectedHours").innerText = formatTime(expectedTillDate);
+
+            let perf = totalMinutes - expectedTillDate;
+            let perfEl = document.getElementById("performanceDiff");
+            if (perf === 0) { perfEl.innerText = "On Track"; perfEl.style.color = "black"; }
+            else if (perf > 0) { perfEl.innerText = "+ " + formatTime(perf); perfEl.style.color = "green"; }
+            else { perfEl.innerText = "- " + formatTime(Math.abs(perf)); perfEl.style.color = "red"; }
+        }
+
+        function filterData() {
+            let year = yearSelect.value;
+            let month = document.getElementById("monthSelect").value;
+            document.querySelectorAll("#attendanceTable tr").forEach(row => {
+                if (row.dataset.year === year && row.dataset.month === month) row.classList.remove("hidden");
+                else row.classList.add("hidden");
+            });
+            calculateHours();
+            animateRows();
+        }
+
+        document.getElementById("monthSelect").addEventListener("change", filterData);
+        yearSelect.addEventListener("change", filterData);
+        filterData();
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Cards animation + hover pop
+        gsap.utils.toArray(".card").forEach(card => {
+            gsap.from(card, {
+                opacity: 0,
+                y: 50,
+                scale: 0.95,
+                duration: 0.8,
+                ease: "back.out(1.2)",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 90%",
+                }
+            });
+
+            card.addEventListener("mouseenter", () => {
+                gsap.to(card, { scale: 1.03, boxShadow: "0 25px 50px rgba(233,30,99,0.5)", duration: 0.3 });
+            });
+            card.addEventListener("mouseleave", () => {
+                gsap.to(card, { scale: 1, boxShadow: "0 10px 20px rgba(0,0,0,0.15)", duration: 0.3 });
+            });
+        });
+
+        // Table row animation: slide up + fade + rotate
+        function animateRows() {
+            let rows = gsap.utils.toArray("#attendanceTable tr:not(.hidden)");
+            gsap.from(rows, {
+                y: 50,
+                rotationX: 15,
+                scale: 0.95,
+                opacity: 0,
+                duration: 0.8,
+                ease: "back.out(0.6)",
+                stagger: 0.12,
+                scrollTrigger: {
+                    trigger: "#attendanceTable",
+                    start: "top 90%",
+                }
+            });
+
+            // Hover pop effect for rows
+            rows.forEach(row => {
+                row.addEventListener("mouseenter", () => {
+                    gsap.to(row, { scale: 1.03, duration: 0.2, ease: "power1.out" });
+                });
+                row.addEventListener("mouseleave", () => {
+                    gsap.to(row, { scale: 1, duration: 0.2, ease: "power1.out" });
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
