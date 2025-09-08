@@ -158,12 +158,21 @@
                 errorMsg.textContent = "❌ Wrong Password";
             } else {
                 errorMsg.textContent = "";
-                //window.location.href = "https://healthmug-attendance.vercel.app/attendance.html";
-                window.location.href = "/attendance"; // clean URL without .html
-
+                localStorage.setItem("isLoggedIn", "true"); 
+                window.location.href = "/attendance";
             }
         });
-    </script> 
+    </script>
+
+
+    <script>
+        // Check login flag
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            // Agar login nahi kiya hai toh redirect back to login
+            window.location.href = "/index.html";
+        }
+    </script>
+    
 </body>
 
 </html>

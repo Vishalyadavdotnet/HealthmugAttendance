@@ -20,12 +20,10 @@
             border-radius: 10px;
         }
 
-        /* Row hover pop effect */
         #attendanceTable tr:hover {
             cursor: pointer;
         }
 
-        /* Card hover glow effect */
         .card {
             transition: box-shadow 0.3s, transform 0.3s;
         }
@@ -39,15 +37,16 @@
 <body class="bg-pink-100 text-pink-900 font-sans transition-all duration-500">
 
     <div class="container mx-auto p-4">
-      
+
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
             <h1 class="text-2xl font-bold">📊 ATTENDANCE DASHBOARD</h1>
-        
+
             <div class="flex items-center gap-3">
-                <select id="themeSelect" class="border border-pink-300 rounded px-2 py-1 text-pink-900 bg-white w-48 md:w-auto">
+                <select id="themeSelect"
+                    class="border border-pink-300 rounded px-2 py-1 text-pink-900 bg-white w-48 md:w-auto">
                     <option value="default">Default (Pink)</option>
                 </select>
-        
+
                 <!-- ✅ Logout Button -->
                 <button id="logoutBtn"
                     class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg shadow-md transition">
@@ -55,7 +54,6 @@
                 </button>
             </div>
         </div>
-
 
         <!-- Year & Month -->
         <div class="flex flex-wrap gap-3 justify-center mb-6">
@@ -117,7 +115,7 @@
                         <th class="px-2 py-1 border">Difference (vs 9:06)</th>
                     </tr>
                 </thead>
-                
+
                 <tbody id="attendanceTable">
 
                     <!-- #region September 2025 -->
@@ -178,6 +176,11 @@
     </div>
 
     <script>
+        // ✅ Protect Attendance Page (Login required)
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "/"; // Redirect to login if not logged in
+        }
+
         // Populate Year
         let yearSelect = document.getElementById("yearSelect");
         for (let y = 2025; y <= 2030; y++) {
@@ -198,131 +201,137 @@
             }
         });
 
-        // Time Parsing and Calculations
-        function parseTime(timeStr) {
-            let [h, m] = timeStr.split(":").map(Number);
-            return h * 60 + m;
-        }
-
-        function formatTime(mins) {
-            let h = Math.floor(mins / 60);
-            let m = mins % 60;
-            return `${h}:${m.toString().padStart(2, '0')}`;
-        }
-
-        function calculateHours() {
-            let totalMinutes = 0;
-            let workedDays = 0;
-            let year = yearSelect.value;
-            let month = document.getElementById("monthSelect").value;
-            const expectedDaily = 9 * 60 + 6;
-
-            document.querySelectorAll(`#attendanceTable tr[data-year="${year}"][data-month="${month}"]`).forEach(row => {
-                let inTime = row.cells[1].innerText;
-                let outTime = row.cells[2].innerText;
-                let totalCell = row.querySelector(".total-cell");
-                let diffCell = row.querySelector(".diff-cell");
-
-                if (inTime && outTime) {
-                    let diff = parseTime(outTime) - parseTime(inTime);
-                    totalMinutes += diff;
-                    workedDays++;
-                    totalCell.innerText = formatTime(diff);
-                    let balance = diff - expectedDaily;
-                    if (balance === 0) { diffCell.innerText = "On Time"; diffCell.style.color = "black"; }
-                    else if (balance > 0) { diffCell.innerText = "+ " + formatTime(balance); diffCell.style.color = "green"; }
-                    else { diffCell.innerText = "- " + formatTime(Math.abs(balance)); diffCell.style.color = "red"; }
-                }
-            });
-
-            document.getElementById("completedHours").innerText = formatTime(totalMinutes);
-            let totalPlanned = parseTime(document.getElementById("totalHours").innerText);
-            let remaining = Math.max(totalPlanned - totalMinutes, 0);
-            document.getElementById("remainingHours").innerText = formatTime(remaining);
-
-            let expectedTillDate = workedDays * expectedDaily;
-            document.getElementById("expectedHours").innerText = formatTime(expectedTillDate);
-
-            let perf = totalMinutes - expectedTillDate;
-            let perfEl = document.getElementById("performanceDiff");
-            if (perf === 0) { perfEl.innerText = "On Track"; perfEl.style.color = "black"; }
-            else if (perf > 0) { perfEl.innerText = "+ " + formatTime(perf); perfEl.style.color = "green"; }
-            else { perfEl.innerText = "- " + formatTime(Math.abs(perf)); perfEl.style.color = "red"; }
-        }
-
-        function filterData() {
-            let year = yearSelect.value;
-            let month = document.getElementById("monthSelect").value;
-            document.querySelectorAll("#attendanceTable tr").forEach(row => {
-                if (row.dataset.year === year && row.dataset.month === month) row.classList.remove("hidden");
-                else row.classList.add("hidden");
-            });
-            calculateHours();
-            animateRows();
-        }
-
-        document.getElementById("monthSelect").addEventListener("change", filterData);
-        yearSelect.addEventListener("change", filterData);
-        filterData();
-
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Cards animation + hover pop
-        gsap.utils.toArray(".card").forEach(card => {
-            gsap.from(card, {
-                opacity: 0,
-                y: 50,
-                scale: 0.95,
-                duration: 0.8,
-                ease: "back.out(1.2)",
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 90%",
-                }
-            });
-
-            card.addEventListener("mouseenter", () => {
-                gsap.to(card, { scale: 1.03, boxShadow: "0 25px 50px rgba(233,30,99,0.5)", duration: 0.3 });
-            });
-            card.addEventListener("mouseleave", () => {
-                gsap.to(card, { scale: 1, boxShadow: "0 10px 20px rgba(0,0,0,0.15)", duration: 0.3 });
-            });
+        // Logout Button Click
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("isLoggedIn"); // ✅ Clear session
+            window.location.href = "/"; // Redirect to login
         });
 
-        // Table row animation: slide up + fade + rotate
-        function animateRows() {
-            let rows = gsap.utils.toArray("#attendanceTable tr:not(.hidden)");
-            gsap.from(rows, {
-                y: 50,
-                rotationX: 15,
-                scale: 0.95,
-                opacity: 0,
-                duration: 0.8,
-                ease: "back.out(0.6)",
-                stagger: 0.12,
-                scrollTrigger: {
-                    trigger: "#attendanceTable",
-                    start: "top 90%",
-                }
-            });
 
-            // Hover pop effect for rows
-            rows.forEach(row => {
-                row.addEventListener("mouseenter", () => {
-                    gsap.to(row, { scale: 1.03, duration: 0.2, ease: "power1.out" });
-                });
-                row.addEventListener("mouseleave", () => {
-                    gsap.to(row, { scale: 1, duration: 0.2, ease: "power1.out" });
-                });
-            });
-        }
+    // Time Parsing and Calculations
+    function parseTime(timeStr) {
+        let [h, m] = timeStr.split(":").map(Number);
+        return h * 60 + m;
+    }
 
-        // Logout Button Click
-            document.getElementById("logoutBtn").addEventListener("click", () => {
-               window.location.href = "/"; // clean URL (index.html ke bina)  // ✅ redirect to login page
-            });
+    function formatTime(mins) {
+        let h = Math.floor(mins / 60);
+        let m = mins % 60;
+        return `${h}:${m.toString().padStart(2, '0')}`;
+    }
 
+    function calculateHours() {
+        let totalMinutes = 0;
+        let workedDays = 0;
+        let year = yearSelect.value;
+        let month = document.getElementById("monthSelect").value;
+        const expectedDaily = 9 * 60 + 6;
+
+        document.querySelectorAll(`#attendanceTable tr[data-year="${year}"][data-month="${month}"]`).forEach(row => {
+            let inTime = row.cells[1].innerText;
+            let outTime = row.cells[2].innerText;
+            let totalCell = row.querySelector(".total-cell");
+            let diffCell = row.querySelector(".diff-cell");
+
+            if (inTime && outTime) {
+                let diff = parseTime(outTime) - parseTime(inTime);
+                totalMinutes += diff;
+                workedDays++;
+                totalCell.innerText = formatTime(diff);
+                let balance = diff - expectedDaily;
+                if (balance === 0) { diffCell.innerText = "On Time"; diffCell.style.color = "black"; }
+                else if (balance > 0) { diffCell.innerText = "+ " + formatTime(balance); diffCell.style.color = "green"; }
+                else { diffCell.innerText = "- " + formatTime(Math.abs(balance)); diffCell.style.color = "red"; }
+            }
+        });
+
+        document.getElementById("completedHours").innerText = formatTime(totalMinutes);
+        let totalPlanned = parseTime(document.getElementById("totalHours").innerText);
+        let remaining = Math.max(totalPlanned - totalMinutes, 0);
+        document.getElementById("remainingHours").innerText = formatTime(remaining);
+
+        let expectedTillDate = workedDays * expectedDaily;
+        document.getElementById("expectedHours").innerText = formatTime(expectedTillDate);
+
+        let perf = totalMinutes - expectedTillDate;
+        let perfEl = document.getElementById("performanceDiff");
+        if (perf === 0) { perfEl.innerText = "On Track"; perfEl.style.color = "black"; }
+        else if (perf > 0) { perfEl.innerText = "+ " + formatTime(perf); perfEl.style.color = "green"; }
+        else { perfEl.innerText = "- " + formatTime(Math.abs(perf)); perfEl.style.color = "red"; }
+    }
+
+    function filterData() {
+        let year = yearSelect.value;
+        let month = document.getElementById("monthSelect").value;
+        document.querySelectorAll("#attendanceTable tr").forEach(row => {
+            if (row.dataset.year === year && row.dataset.month === month) row.classList.remove("hidden");
+            else row.classList.add("hidden");
+        });
+        calculateHours();
+        animateRows();
+    }
+
+    document.getElementById("monthSelect").addEventListener("change", filterData);
+    yearSelect.addEventListener("change", filterData);
+    filterData();
+
+    // GSAP Animations
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Cards animation + hover pop
+    gsap.utils.toArray(".card").forEach(card => {
+        gsap.from(card, {
+            opacity: 0,
+            y: 50,
+            scale: 0.95,
+            duration: 0.8,
+            ease: "back.out(1.2)",
+            scrollTrigger: {
+                trigger: card,
+                start: "top 90%",
+            }
+        });
+
+        card.addEventListener("mouseenter", () => {
+            gsap.to(card, { scale: 1.03, boxShadow: "0 25px 50px rgba(233,30,99,0.5)", duration: 0.3 });
+        });
+        card.addEventListener("mouseleave", () => {
+            gsap.to(card, { scale: 1, boxShadow: "0 10px 20px rgba(0,0,0,0.15)", duration: 0.3 });
+        });
+    });
+
+    // Table row animation: slide up + fade + rotate
+    function animateRows() {
+        let rows = gsap.utils.toArray("#attendanceTable tr:not(.hidden)");
+        gsap.from(rows, {
+            y: 50,
+            rotationX: 15,
+            scale: 0.95,
+            opacity: 0,
+            duration: 0.8,
+            ease: "back.out(0.6)",
+            stagger: 0.12,
+            scrollTrigger: {
+                trigger: "#attendanceTable",
+                start: "top 90%",
+            }
+        });
+
+        // Hover pop effect for rows
+        rows.forEach(row => {
+            row.addEventListener("mouseenter", () => {
+                gsap.to(row, { scale: 1.03, duration: 0.2, ease: "power1.out" });
+            });
+            row.addEventListener("mouseleave", () => {
+                gsap.to(row, { scale: 1, duration: 0.2, ease: "power1.out" });
+            });
+        });
+    }
+
+    // Logout Button Click
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        window.location.href = "/"; // clean URL (index.html ke bina)  // ✅ redirect to login page
+    });
     </script>
 </body>
 
