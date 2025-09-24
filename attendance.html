@@ -287,45 +287,6 @@
         </div>
     </div>
 
-    <div id="chatbot" class="fixed bottom-4 right-4 w-80 bg-white p-4 rounded-lg shadow-lg">
-        <div id="chatOutput" class="h-40 overflow-y-auto mb-2 border p-2"></div>
-        <input id="chatInput" class="w-full border rounded px-2 py-1" placeholder="Ask something...">
-    </div>
-
-    <script>
-        const chatInput = document.getElementById("chatInput");
-        const chatOutput = document.getElementById("chatOutput");
-
-       chatInput.addEventListener("keypress", async (e) => {
-            if (e.key === "Enter") {
-                const userInput = chatInput.value;
-
-                try {
-                    const res = await fetch("/api/chat", {
-                        method: "POST",
-                        body: JSON.stringify({ message: userInput }),
-                        headers: { "Content-Type": "application/json" }
-                    });
-
-                    let data;
-                    try {
-                        data = await res.json();
-                    } catch {
-                        data = { reply: "Server returned invalid JSON" };
-                    }
-
-                    chatOutput.innerHTML += `<div><b>You:</b> ${userInput}</div>`;
-                    chatOutput.innerHTML += `<div><b>Bot:</b> ${data.reply}</div>`;
-                    chatOutput.scrollTop = chatOutput.scrollHeight;
-                    chatInput.value = "";
-                } catch (err) {
-                    chatOutput.innerHTML += `<div style="color:red"><b>Error:</b> ${err.message}</div>`;
-                }
-            }
-        });
-
-    </script>
-
     <script>
         // ✅ Protect Attendance Page (Login required)
         if (localStorage.getItem("isLoggedIn") !== "true") {
