@@ -296,21 +296,34 @@
         const chatInput = document.getElementById("chatInput");
         const chatOutput = document.getElementById("chatOutput");
 
-        chatInput.addEventListener("keypress", async (e) => {
+       chatInput.addEventListener("keypress", async (e) => {
             if (e.key === "Enter") {
                 const userInput = chatInput.value;
-                const res = await fetch("/api/chat", {
-                    method: "POST",
-                    body: JSON.stringify({ message: userInput }),
-                    headers: { "Content-Type": "application/json" }
-                });
-                const data = await res.json();
-                chatOutput.innerHTML += `<div><b>You:</b> ${userInput}</div>`;
-                chatOutput.innerHTML += `<div><b>Bot:</b> ${data.reply}</div>`;
-                chatOutput.scrollTop = chatOutput.scrollHeight;
-                chatInput.value = "";
+
+                try {
+                    const res = await fetch("/api/chat", {
+                        method: "POST",
+                        body: JSON.stringify({ message: userInput }),
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch {
+                        data = { reply: "Server returned invalid JSON" };
+                    }
+
+                    chatOutput.innerHTML += `<div><b>You:</b> ${userInput}</div>`;
+                    chatOutput.innerHTML += `<div><b>Bot:</b> ${data.reply}</div>`;
+                    chatOutput.scrollTop = chatOutput.scrollHeight;
+                    chatInput.value = "";
+                } catch (err) {
+                    chatOutput.innerHTML += `<div style="color:red"><b>Error:</b> ${err.message}</div>`;
+                }
             }
         });
+
     </script>
 
     <script>
